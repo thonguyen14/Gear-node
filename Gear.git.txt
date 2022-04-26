@@ -1,0 +1,44 @@
+Guide run the Gear node on Linux x64 
+
+  Terminal 
+wget https://builds.gear.rs/gear-nightly-linux-x86_64.tar.xz && \
+tar xvf gear-nightly-linux-x86_64.tar.xz && \
+rm gear-nightly-linux-x86_64.tar.xz && \
+chmod +x gear-node
+
+  To run the Gear node as one of the Linux services, you need to configure the systemd file:
+  From root directory:
+cd /etc/systemd/system
+sudo nano gear-node.service
+  
+  Configure and save:
+[Unit]
+Description=Gear Node
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/
+ExecStart=/root/gear-node --name 'NODE_NAME' --telemetry-url 'ws://telemetry-backend-shard.gear-tech.io:32001/submit 0'
+Restart=always
+RestartSec=3
+LimitNOFILE=10000
+
+[Install]
+WantedBy=multi-user.target 
+  ( Note: please replace "NODE_NAME" with your own name )
+   => ctrl+x
+
+  Run to start the service: sudo systemctl start gear-node
+
+  Automatically get it to start on boot : sudo systemctl enable gear-node
+  
+  How to check status of gear-node service : sudo systemctl status gear-node
+                                             https://telemetry.gear-tech.io/#/0x70f04c10c85b57482a63514576e6fab6b0df4ddcfbfdf1da8f03dc3f59ba5439
+Checking logs :
+
+  see the service logs by running the following command: journalctl -u gear-node
+  
+  see the last 50 lines of logs : journalctl -u gear-node -fn 50
+
